@@ -21,6 +21,12 @@
         background: radial-gradient(120% 90% at 50% 45%, transparent 30%, rgba(3,5,8,.75));
       }
       #stage { position: fixed; left: 50%; top: 50%; transform-origin: center; }
+      /* The UI sizes itself with vw/vh; inside the scaled stage those must follow the stage, not the frame */
+      #stage .max-w-\[96vw\] { max-width: calc(var(--vw) * 96) !important; }
+      #stage .max-h-\[94vh\] { max-height: calc(var(--vh) * 94) !important; }
+      #stage .max-h-\[70vh\] { max-height: calc(var(--vh) * 70) !important; }
+      #stage .max-h-\[60vh\] { max-height: calc(var(--vh) * 60) !important; }
+      #stage .max-h-\[50vh\] { max-height: calc(var(--vh) * 50) !important; }
       .demo-tag {
         position: fixed; left: 12px; bottom: 12px; z-index: 9999; pointer-events: none;
         font: 600 11px/1 system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase;
@@ -45,6 +51,8 @@
           stage.style.width = (w / s) + 'px'
           stage.style.height = (h / s) + 'px'
           stage.style.transform = 'translate(-50%, -50%) scale(' + s + ')'
+          stage.style.setProperty('--vw', (w / s / 100) + 'px')
+          stage.style.setProperty('--vh', (h / s / 100) + 'px')
         }
         fit()
         window.addEventListener('resize', fit)
