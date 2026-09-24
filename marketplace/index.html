@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Daddy Marketplace - Live Demo</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; }
+      html { background: #05070a; }
+      body { background: transparent !important; }
+      body::before {
+        content: ""; position: fixed; inset: -20px; z-index: -2;
+        background:
+          radial-gradient(55% 60% at 15% 10%, rgba(220, 38, 38, .16), transparent 70%),
+          radial-gradient(50% 55% at 90% 95%, rgba(31, 208, 224, .08), transparent 70%),
+          linear-gradient(180deg, #0b0d12, #06070a);
+      }
+      body::after {
+        content: ""; position: fixed; inset: 0; z-index: -1;
+        background: radial-gradient(120% 90% at 50% 45%, transparent 30%, rgba(3,5,8,.75));
+      }
+      #stage { position: fixed; left: 50%; top: 50%; transform-origin: center; }
+      .demo-tag {
+        position: fixed; left: 12px; bottom: 12px; z-index: 9999; pointer-events: none;
+        font: 600 11px/1 system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase;
+        color: rgba(255,255,255,.7); background: rgba(0,0,0,.55); padding: 7px 10px; border-radius: 999px;
+      }
+      .demo-tag b { color: #1fd0e0; }
+      @media (max-width: 1500px), (max-height: 900px) { .demo-tag { display: none; } }
+    </style>
+    <script type="module" crossorigin src="./assets/index-CDXMll6x.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-hM4xmADP.css">
+  </head>
+  <body>
+    <div id="stage"><div id="app"></div></div>
+    <div class="demo-tag"><b>Live demo</b> · sample data · Daddy Studio</div>
+    <script>
+      // Lay the UI out on at least a 1280x720 canvas and scale it down to fit small frames
+      (function () {
+        var stage = document.getElementById('stage')
+        function fit() {
+          var w = window.innerWidth, h = window.innerHeight
+          var s = Math.min(1, w / 1280, h / 720)
+          stage.style.width = (w / s) + 'px'
+          stage.style.height = (h / s) + 'px'
+          stage.style.transform = 'translate(-50%, -50%) scale(' + s + ')'
+        }
+        fit()
+        window.addEventListener('resize', fit)
+      })()
+    </script>
+  </body>
+</html>
