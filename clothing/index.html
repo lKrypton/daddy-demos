@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daddy Clothing Showroom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #06080b;
+    --card: #0d1217;
+    --card-2: #11181f;
+    --line: rgba(255, 255, 255, .08);
+    --line-2: rgba(255, 255, 255, .16);
+    --text: #e9f0f3;
+    --muted: #95a3ae;
+    --faint: #5f6c77;
+    --cyan: #1fd0e0;
+    --cyan-soft: rgba(31, 208, 224, .12);
+    --cyan-line: rgba(31, 208, 224, .38);
+    --display: 'Chakra Petch', 'Segoe UI', system-ui, sans-serif;
+    --body: 'Instrument Sans', 'Segoe UI', system-ui, sans-serif;
+    --cut: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 400 14px/1.45 var(--body); overflow: hidden; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+  #vp { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #app { position: relative; width: 1280px; height: 720px; flex: none; transform-origin: center center; display: grid; grid-template-columns: 208px 1fr 292px; grid-template-rows: 60px 1fr 40px; background:
+      radial-gradient(900px 520px at 46% 54%, rgba(31, 208, 224, .08), transparent 70%), var(--bg); }
+
+  /* top bar */
+  .top { grid-column: 1 / 4; display: flex; align-items: center; gap: 22px; padding: 0 22px; border-bottom: 1px solid var(--line); }
+  .logo { font-family: var(--display); font-weight: 700; letter-spacing: .2em; font-size: 15px; text-transform: uppercase; white-space: nowrap; }
+  .logo b { color: var(--cyan); }
+  .logo span { color: var(--faint); margin: 0 10px; font-weight: 500; }
+  .packs { display: flex; gap: 4px; margin-left: auto; }
+  .pk { position: relative; padding: 9px 16px 9px; font-family: var(--display); font-weight: 600; font-size: 14px; letter-spacing: .1em; color: var(--muted); clip-path: var(--cut); background: var(--card); transition: color .15s, background .15s; }
+  .pk i { font-style: normal; font-size: 11px; color: var(--faint); margin-left: 8px; font-family: var(--body); letter-spacing: 0; }
+  .pk:hover { color: var(--text); background: var(--card-2); }
+  .pk.on { color: #021a1d; background: var(--cyan); }
+  .pk.on i { color: rgba(2, 26, 29, .7); }
+  .count { font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: .12em; color: var(--muted); min-width: 74px; text-align: right; }
+  .count b { color: var(--text); font-size: 16px; }
+
+  /* slots */
+  .rail { border-right: 1px solid var(--line); padding: 18px 0; display: flex; flex-direction: column; gap: 2px; overflow: auto; }
+  .rail h4 { margin: 0 22px 10px; font: 600 10px/1 var(--display); letter-spacing: .24em; color: var(--faint); text-transform: uppercase; }
+  .sl { position: relative; display: flex; align-items: center; justify-content: space-between; text-align: left; padding: 10px 22px; font-family: var(--display); font-weight: 500; font-size: 15px; letter-spacing: .04em; color: var(--muted); transition: color .15s, background .15s; }
+  .sl em { font-style: normal; font-size: 12px; color: var(--faint); font-family: var(--body); }
+  .sl::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; background: var(--cyan); transform: scaleY(0); transition: transform .18s; }
+  .sl:hover { color: var(--text); background: rgba(255, 255, 255, .03); }
+  .sl.on { color: var(--text); background: var(--cyan-soft); }
+  .sl.on::before { transform: scaleY(1); }
+  .sl.on em { color: var(--cyan); }
+
+  /* stage */
+  .stage { position: relative; overflow: hidden; cursor: grab; user-select: none; -webkit-user-select: none; touch-action: pan-y; }
+  .stage.drag { cursor: grabbing; }
+  .ghost { position: absolute; left: 0; right: 0; top: 14%; text-align: center; font-family: var(--display); font-weight: 700; font-size: 250px; line-height: 1; letter-spacing: .04em; color: transparent; -webkit-text-stroke: 1.5px rgba(255, 255, 255, .06); pointer-events: none; white-space: nowrap; }
+  .floor { position: absolute; left: 50%; bottom: 74px; width: 620px; height: 190px; transform: translateX(-50%) perspective(420px) rotateX(68deg); background:
+      repeating-linear-gradient(90deg, rgba(31, 208, 224, .22) 0 1px, transparent 1px 44px),
+      repeating-linear-gradient(0deg, rgba(31, 208, 224, .22) 0 1px, transparent 1px 44px);
+    -webkit-mask-image: radial-gradient(closest-side, #000 20%, transparent 100%); mask-image: radial-gradient(closest-side, #000 20%, transparent 100%); pointer-events: none; }
+  .glow { position: absolute; left: 50%; bottom: 96px; width: 300px; height: 40px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(31, 208, 224, .5), transparent); filter: blur(6px); pointer-events: none; }
+  #big { position: absolute; left: 50%; bottom: 100px; height: 480px; max-width: 86%; transform: translateX(-50%); object-fit: contain; object-position: bottom; filter: drop-shadow(0 22px 26px rgba(0, 0, 0, .65)); pointer-events: none; }
+  .br { position: absolute; width: 22px; height: 22px; border: 0 solid var(--line-2); pointer-events: none; }
+  .br.a { left: 18px; top: 18px; border-left-width: 1px; border-top-width: 1px; }
+  .br.b { right: 18px; top: 18px; border-right-width: 1px; border-top-width: 1px; }
+  .br.c { left: 18px; bottom: 18px; border-left-width: 1px; border-bottom-width: 1px; }
+  .br.d { right: 18px; bottom: 18px; border-right-width: 1px; border-bottom-width: 1px; }
+  .title { position: absolute; left: 34px; top: 32px; pointer-events: none; }
+  .title small { display: block; font: 600 11px/1 var(--display); letter-spacing: .26em; color: var(--cyan); text-transform: uppercase; margin-bottom: 10px; }
+  .title h2 { margin: 0; font: 700 40px/1 var(--display); letter-spacing: .02em; text-transform: uppercase; }
+  .title p { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
+  .arr { position: absolute; top: 50%; width: 42px; height: 42px; margin-top: -21px; display: grid; place-items: center; color: var(--muted); background: rgba(13, 18, 23, .8); clip-path: var(--cut); transition: color .15s, background .15s; z-index: 2; }
+  .arr:hover { color: #021a1d; background: var(--cyan); }
+  .arr.l { left: 16px; } .arr.r { right: 16px; }
+  .arr svg { width: 18px; height: 18px; }
+  .tex { position: absolute; left: 0; right: 0; bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; z-index: 2; }
+  .tex .lab { font: 600 10px/1 var(--display); letter-spacing: .22em; color: var(--faint); text-transform: uppercase; margin-right: 6px; }
+  .tex button { width: 46px; height: 58px; padding: 2px; background: var(--card); clip-path: var(--cut); box-shadow: inset 0 0 0 1px var(--line); transition: background .15s; }
+  .tex button img { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
+  .tex button:hover { background: var(--card-2); }
+  .tex button.on { background: var(--cyan-soft); }
+  .tex button.on img { filter: drop-shadow(0 0 6px rgba(31, 208, 224, .7)); }
+  .hint { position: absolute; right: 34px; top: 34px; font: 600 10px/1 var(--display); letter-spacing: .22em; color: var(--faint); text-transform: uppercase; pointer-events: none; }
+
+  /* picker */
+  .pick { border-left: 1px solid var(--line); padding: 14px 14px 14px; display: flex; flex-direction: column; min-height: 0; }
+  .pick h4 { margin: 4px 6px 12px; font: 600 10px/1 var(--display); letter-spacing: .24em; color: var(--faint); text-transform: uppercase; display: flex; justify-content: space-between; }
+  .grid { overflow: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-content: start; padding: 2px 4px 8px 2px; scrollbar-width: thin; scrollbar-color: #26323c transparent; }
+  .th { position: relative; aspect-ratio: 3 / 4.3; background: var(--card); clip-path: var(--cut); box-shadow: inset 0 0 0 1px var(--line); display: flex; align-items: flex-end; justify-content: center; padding: 4px 3px 0; transition: background .15s; }
+  .th img { max-width: 100%; max-height: 100%; object-fit: contain; object-position: bottom; }
+  .th:hover { background: var(--card-2); }
+  .th.on { background: var(--cyan-soft); box-shadow: inset 0 0 0 1px var(--cyan); }
+  .th b { position: absolute; left: 6px; top: 5px; font: 600 10px/1 var(--display); letter-spacing: .08em; color: var(--faint); }
+  .th.on b { color: var(--cyan); }
+  .th u { position: absolute; right: 5px; top: 5px; text-decoration: none; font: 600 9px/1 var(--display); letter-spacing: .06em; color: #021a1d; background: var(--cyan); padding: 2px 4px; }
+
+  footer { grid-column: 1 / 4; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 22px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+  footer b { color: var(--text); font-weight: 600; }
+  footer .k { font: 600 10px/1 var(--display); letter-spacing: .2em; color: var(--faint); text-transform: uppercase; white-space: nowrap; }
+
+  /* narrow screens: no scaling, stacked */
+  body.m { overflow: auto; }
+  body.m #vp { position: static; display: block; }
+  body.m #app { width: 100%; height: auto; transform: none !important; display: flex; flex-direction: column; }
+  body.m .top { flex-wrap: wrap; padding: 12px 14px; gap: 10px; }
+  body.m .packs { margin-left: 0; width: 100%; flex-wrap: wrap; }
+  body.m .count { margin-left: auto; }
+  body.m .rail { flex-direction: row; overflow-x: auto; padding: 8px 10px; border-right: 0; border-bottom: 1px solid var(--line); }
+  body.m .rail h4 { display: none; }
+  body.m .sl { white-space: nowrap; padding: 8px 14px; }
+  body.m .sl::before { display: none; }
+  body.m .stage { height: 460px; flex: none; }
+  body.m .ghost { font-size: 130px; }
+  body.m #big { height: 340px; bottom: 96px; }
+  body.m .title h2 { font-size: 26px; }
+  body.m .hint { display: none; }
+  body.m .pick { border-left: 0; border-top: 1px solid var(--line); }
+  body.m .grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); overflow: visible; }
+  body.m footer { padding: 12px 14px; height: auto; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div id="vp">
+  <div id="app">
+    <div class="top">
+      <div class="logo"><b>Daddy</b> Studio<span>/</span>Clothing</div>
+      <div class="packs" id="packs"></div>
+      <div class="count" id="count"></div>
+    </div>
+
+    <nav class="rail" id="rail"></nav>
+
+    <main class="stage" id="stage">
+      <div class="ghost" id="ghost"></div>
+      <div class="floor"></div>
+      <div class="glow"></div>
+      <img id="big" alt="">
+      <i class="br a"></i><i class="br b"></i><i class="br c"></i><i class="br d"></i>
+      <div class="title"><small id="kind"></small><h2 id="name"></h2><p id="sub"></p></div>
+      <div class="hint">Drag to rotate</div>
+      <button class="arr l" id="rotL" aria-label="Rotate left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button class="arr r" id="rotR" aria-label="Rotate right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 5l7 7-7 7"/></svg></button>
+      <div class="tex" id="tex"></div>
+    </main>
+
+    <aside class="pick">
+      <h4><span id="pickTitle"></span><span id="pickCount"></span></h4>
+      <div class="grid" id="grid"></div>
+    </aside>
+
+    <footer>
+      <span id="note"></span>
+      <span class="k">Real in-game screenshots</span>
+    </footer>
+  </div>
+</div>
+
+<script>
+const PACKS = {
+  lssd: { name: 'LSSD', long: 'Los Santos Sheriff' },
+  pbsd: { name: 'PBSD', long: 'Paleto Bay Sheriff' },
+  sapr: { name: 'SAPR', long: 'San Andreas Park Rangers' },
+  sasp: { name: 'SASP', long: 'San Andreas State Police' }
+};
+const SLOTS = {
+  jbib: 'Tops', lowr: 'Trousers', accs: 'Accessories', task: 'Armor & vests', berd: 'Gear',
+  decl: 'Decals', hand: 'Bags', feet: 'Shoes', uppr: 'Upper body', teef: 'Extras', p_head: 'Hats'
+};
+const SLOT_ORDER = ['jbib', 'lowr', 'accs', 'task', 'berd', 'decl', 'hand', 'feet', 'uppr', 'teef', 'p_head'];
+
+let DATA = null, pack = 'sasp', slot = 'all', list = [], cur = 0, tex = 0, ai = 0, timer = null, interacted = false;
+const $ = (id) => document.getElementById(id);
+const pad = (n, l) => String(n).padStart(l, '0');
+const imgUrl = (it, t, a) => 'img/' + pack + '/' + it.slot + '_' + pad(it.idx, 3) + '_t' + t + '_a' + pad(a, 3) + '.webp';
+const itemName = (it) => SLOTS[it.slot] + ' ' + pad(it.idx + 1, 2);
+
+/* ---- fit the fixed 1280x720 stage into whatever frame we are in ---- */
+let scale = 1;
+function fit() {
+  const narrow = window.innerWidth < 900 || window.innerWidth < window.innerHeight * 1.05;
+  document.body.classList.toggle('m', narrow);
+  const app = $('app');
+  if (narrow) { app.style.transform = ''; scale = 1; return; }
+  scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  app.style.transform = 'scale(' + scale + ')';
+}
+window.addEventListener('resize', fit);
+
+function setPack(p, keepSlot) {
+  pack = p;
+  if (!keepSlot) slot = 'all';
+  document.title = PACKS[p].name + ' | Daddy Clothing Showroom';
+  $('ghost').textContent = PACKS[p].name;
+  const u = new URL(location.href); u.searchParams.set('pack', p);
+  try { history.replaceState(null, '', u); } catch (e) {}
+  renderPacks(); renderRail(); renderPicker(0);
+}
+
+function renderPacks() {
+  const box = $('packs'); box.innerHTML = '';
+  Object.keys(PACKS).forEach((k) => {
+    if (!DATA.packs[k]) return;
+    const b = document.createElement('button');
+    b.className = 'pk' + (k === pack ? ' on' : '');
+    b.innerHTML = PACKS[k].name + '<i>' + DATA.packs[k].items.length + '</i>';
+    b.onclick = () => setPack(k);
+    box.appendChild(b);
+  });
+}
+
+function renderRail() {
+  const d = DATA.packs[pack], counts = {};
+  d.items.forEach((it) => counts[it.slot] = (counts[it.slot] || 0) + 1);
+  const r = $('rail'); r.innerHTML = '<h4>Category</h4>';
+  const mk = (key, label, n) => {
+    const b = document.createElement('button');
+    b.className = 'sl' + (slot === key ? ' on' : '');
+    b.innerHTML = '<span>' + label + '</span><em>' + n + '</em>';
+    b.onclick = () => { slot = key; renderRail(); renderPicker(0); };
+    r.appendChild(b);
+  };
+  mk('all', 'All pieces', d.items.length);
+  SLOT_ORDER.filter((s) => counts[s]).forEach((s) => mk(s, SLOTS[s], counts[s]));
+  let t = '<b>' + PACKS[pack].long + '</b> · ' + d.items.length + ' pieces shown on the male model, ' + d.textures + ' variations. ';
+  t += d.female > 0 ? '<b>Female version included:</b> ' + d.female + ' pieces for female freemode peds.' : '<b>Male only</b> pack.';
+  $('note').innerHTML = t;
+}
+
+function renderPicker(sel) {
+  const d = DATA.packs[pack];
+  list = d.items.filter((it) => slot === 'all' || it.slot === slot)
+    .sort((a, b) => SLOT_ORDER.indexOf(a.slot) - SLOT_ORDER.indexOf(b.slot) || a.idx - b.idx);
+  $('pickTitle').textContent = slot === 'all' ? 'All pieces' : SLOTS[slot];
+  $('pickCount').textContent = list.length;
+  const g = $('grid'); g.innerHTML = '';
+  list.forEach((it, i) => {
+    const b = document.createElement('button');
+    b.className = 'th';
+    b.title = itemName(it);
+    b.innerHTML = '<b>' + pad(it.idx + 1, 2) + '</b>' + (it.tex > 1 ? '<u>' + it.tex + '</u>' : '') + '<img loading="lazy" alt="' + itemName(it) + '" src="' + imgUrl(it, 0, 0) + '">';
+    b.onclick = () => select(i);
+    g.appendChild(b);
+  });
+  if (list.length) select(Math.min(sel, list.length - 1)); else $('big').removeAttribute('src');
+}
+
+function frames() { return list[cur].frames[String(tex)] || [0]; }
+function show() {
+  const it = list[cur], fr = frames();
+  ai = ((ai % fr.length) + fr.length) % fr.length;
+  $('big').src = imgUrl(it, tex, fr[ai]);
+  $('big').alt = itemName(it);
+}
+function preload(it) {
+  Object.keys(it.frames).forEach((t) => it.frames[t].forEach((a) => { const i = new Image(); i.src = imgUrl(it, t, a); }));
+}
+
+function select(i) {
+  cur = i; tex = 0; ai = 0; interacted = false;
+  const it = list[cur];
+  preload(it);
+  [...$('grid').children].forEach((c, k) => c.classList.toggle('on', k === i));
+  const on = $('grid').children[i]; if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest' });
+  $('kind').textContent = SLOTS[it.slot] + ' / ' + PACKS[pack].name;
+  $('name').textContent = itemName(it);
+  $('sub').textContent = it.tex > 1 ? it.tex + ' variations' : 'Single variation';
+  $('count').innerHTML = '<b>' + pad(i + 1, 2) + '</b> / ' + pad(list.length, 2);
+  const t = $('tex'); t.innerHTML = '';
+  if (it.tex > 1) {
+    t.innerHTML = '<span class="lab">Variations</span>';
+    for (let k = 0; k < it.tex; k++) {
+      const b = document.createElement('button');
+      b.className = k === 0 ? 'on' : '';
+      b.innerHTML = '<img alt="Variation ' + (k + 1) + '" src="' + imgUrl(it, k, 0) + '">';
+      b.onclick = (e) => { e.stopPropagation(); tex = k; ai = Math.min(ai, 1); [...t.querySelectorAll('button')].forEach((x, n) => x.classList.toggle('on', n === k)); show(); };
+      t.appendChild(b);
+    }
+  }
+  show();
+  startSpin();
+}
+
+function startSpin() {
+  if (timer) clearInterval(timer);
+  timer = setInterval(() => { if (!interacted && tex === 0 && list.length) { ai++; show(); } }, 1000);
+}
+function step(d) { interacted = true; ai += d; show(); }
+
+(function wire() {
+  $('rotL').onclick = () => step(-1);
+  $('rotR').onclick = () => step(1);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') step(-1);
+    else if (e.key === 'ArrowRight') step(1);
+    else if (e.key === 'ArrowUp' && list.length) select((cur - 1 + list.length) % list.length);
+    else if (e.key === 'ArrowDown' && list.length) select((cur + 1) % list.length);
+  });
+  const st = $('stage'); let down = false, sx = 0, acc = 0;
+  st.addEventListener('pointerdown', (e) => { if (e.target.closest('button')) return; down = true; sx = e.clientX; acc = 0; interacted = true; st.classList.add('drag'); st.setPointerCapture(e.pointerId); });
+  st.addEventListener('pointermove', (e) => {
+    if (!down) return;
+    acc += (e.clientX - sx) / scale; sx = e.clientX;
+    const unit = tex === 0 ? 28 : 80;
+    while (acc > unit) { step(-1); acc -= unit; }
+    while (acc < -unit) { step(1); acc += unit; }
+  });
+  const up = () => { down = false; st.classList.remove('drag'); };
+  st.addEventListener('pointerup', up); st.addEventListener('pointercancel', up);
+})();
+
+fetch('manifest.json').then((r) => r.json()).then((j) => {
+  DATA = j;
+  Object.keys(DATA.packs).forEach((k) => {
+    const d = DATA.packs[k];
+    d.textures = d.items.reduce((s, it) => s + it.tex, 0);
+  });
+  const q = new URL(location.href).searchParams;
+  fit();
+  const p = q.get('pack');
+  setPack(p && DATA.packs[p] ? p : 'sasp');
+});
+</script>
+</body>
+</html>
