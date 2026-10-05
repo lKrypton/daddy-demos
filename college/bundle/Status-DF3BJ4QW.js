@@ -1,0 +1,1 @@
+import{N as e,O as t,U as n,V as r,et as i,i as a}from"./index-DHf_lI1N.js";var o=a(e({__name:`Status`,props:{tone:{}},setup(e){return(a,o)=>(r(),t(`span`,{class:i([`dc-status`,e.tone??`grey`])},[n(a.$slots,`default`,{},void 0,!0)],2))}}),[[`__scopeId`,`data-v-fb6a852d`]]);export{o as t};
