@@ -1,0 +1,1 @@
+import{X as e}from"./index-C9V0wf_l.js";var t=e(null),n=0,r;function i(e,i,o){r&&clearTimeout(r),t.value={id:++n,tone:e,text:i,retry:o},e!==`error`&&(r=setTimeout(a,3e3))}function a(){t.value=null}var o={success:e=>i(`success`,e),info:e=>i(`info`,e),warning:e=>i(`warning`,e),error:(e,t)=>i(`error`,e,t)};export{a as n,o as r,t};

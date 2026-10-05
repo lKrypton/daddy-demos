@@ -1,0 +1,1 @@
+import{C as e,X as t}from"./index-C9V0wf_l.js";import{t as n}from"./color-DK1qxpVT.js";var r=`#e5484d`,i=t(r);function a(){let e=getComputedStyle(document.documentElement).getPropertyValue(`--accent`).trim();i.value=/^#[0-9a-f]{6}$/i.test(e)?e.toLowerCase():r}var o=e(()=>n(i.value,.15)),s=e(()=>n(i.value,.15));export{a as i,s as n,o as r,i as t};
