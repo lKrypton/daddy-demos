@@ -47,7 +47,8 @@
   .count b { color: var(--text); font-size: 16px; }
 
   /* slots */
-  .rail { border-right: 1px solid var(--line); padding: 18px 0; display: flex; flex-direction: column; gap: 2px; overflow: auto; }
+  .rail { border-right: 1px solid var(--line); padding: 18px 0; display: flex; flex-direction: column; gap: 2px; overflow: auto; scrollbar-width: thin; scrollbar-color: #26323c transparent; }
+  .rail h4:not(:first-child) { margin-top: 14px; }
   .rail h4 { margin: 0 22px 10px; font: 600 10px/1 var(--display); letter-spacing: .24em; color: var(--faint); text-transform: uppercase; }
   .sl { position: relative; display: flex; align-items: center; justify-content: space-between; text-align: left; padding: 10px 22px; font-family: var(--display); font-weight: 500; font-size: 15px; letter-spacing: .04em; color: var(--muted); transition: color .15s, background .15s; }
   .sl em { font-style: normal; font-size: 12px; color: var(--faint); font-family: var(--body); }
@@ -66,7 +67,7 @@
       repeating-linear-gradient(0deg, rgba(31, 208, 224, .22) 0 1px, transparent 1px 44px);
     -webkit-mask-image: radial-gradient(closest-side, #000 20%, transparent 100%); mask-image: radial-gradient(closest-side, #000 20%, transparent 100%); pointer-events: none; }
   .glow { position: absolute; left: 50%; bottom: 96px; width: 300px; height: 40px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(31, 208, 224, .5), transparent); filter: blur(6px); pointer-events: none; }
-  #big { position: absolute; left: 50%; bottom: 100px; height: 480px; max-width: 86%; transform: translateX(-50%); object-fit: contain; object-position: bottom; filter: drop-shadow(0 22px 26px rgba(0, 0, 0, .65)); pointer-events: none; }
+  #big { position: absolute; left: 50%; bottom: 92px; height: 500px; max-width: 86%; transform: translateX(-50%); object-fit: contain; object-position: center; filter: drop-shadow(0 22px 26px rgba(0, 0, 0, .65)); pointer-events: none; }
   .br { position: absolute; width: 22px; height: 22px; border: 0 solid var(--line-2); pointer-events: none; }
   .br.a { left: 18px; top: 18px; border-left-width: 1px; border-top-width: 1px; }
   .br.b { right: 18px; top: 18px; border-right-width: 1px; border-top-width: 1px; }
@@ -80,10 +81,11 @@
   .arr:hover { color: #021a1d; background: var(--cyan); }
   .arr.l { left: 16px; } .arr.r { right: 16px; }
   .arr svg { width: 18px; height: 18px; }
-  .tex { position: absolute; left: 0; right: 0; bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; z-index: 2; }
+  .tex { position: absolute; left: 70px; right: 70px; bottom: 14px; display: flex; justify-content: safe center; align-items: center; gap: 8px; z-index: 2; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; scrollbar-color: #26323c transparent; }
+  .tex button { flex: none; }
   .tex .lab { font: 600 10px/1 var(--display); letter-spacing: .22em; color: var(--faint); text-transform: uppercase; margin-right: 6px; }
-  .tex button { width: 46px; height: 58px; padding: 2px; background: var(--card); clip-path: var(--cut); box-shadow: inset 0 0 0 1px var(--line); transition: background .15s; }
-  .tex button img { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
+  .tex button { width: 52px; height: 52px; padding: 2px; background: var(--card); clip-path: var(--cut); box-shadow: inset 0 0 0 1px var(--line); transition: background .15s; }
+  .tex button img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
   .tex button:hover { background: var(--card-2); }
   .tex button.on { background: var(--cyan-soft); }
   .tex button.on img { filter: drop-shadow(0 0 6px rgba(31, 208, 224, .7)); }
@@ -93,8 +95,8 @@
   .pick { border-left: 1px solid var(--line); padding: 14px 14px 14px; display: flex; flex-direction: column; min-height: 0; }
   .pick h4 { margin: 4px 6px 12px; font: 600 10px/1 var(--display); letter-spacing: .24em; color: var(--faint); text-transform: uppercase; display: flex; justify-content: space-between; }
   .grid { overflow: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-content: start; padding: 2px 4px 8px 2px; scrollbar-width: thin; scrollbar-color: #26323c transparent; }
-  .th { position: relative; aspect-ratio: 3 / 4.3; background: var(--card); clip-path: var(--cut); box-shadow: inset 0 0 0 1px var(--line); display: flex; align-items: flex-end; justify-content: center; padding: 4px 3px 0; transition: background .15s; }
-  .th img { max-width: 100%; max-height: 100%; object-fit: contain; object-position: bottom; }
+  .th { position: relative; aspect-ratio: 1; background: var(--card); clip-path: var(--cut); box-shadow: inset 0 0 0 1px var(--line); display: flex; align-items: center; justify-content: center; padding: 4px; transition: background .15s; }
+  .th img { max-width: 100%; max-height: 100%; object-fit: contain; object-position: center; }
   .th:hover { background: var(--card-2); }
   .th.on { background: var(--cyan-soft); box-shadow: inset 0 0 0 1px var(--cyan); }
   .th b { position: absolute; left: 6px; top: 5px; font: 600 10px/1 var(--display); letter-spacing: .08em; color: var(--faint); }
@@ -164,22 +166,25 @@
 
 <script>
 const PACKS = {
-  lssd: { name: 'LSSD', long: 'Los Santos Sheriff' },
-  pbsd: { name: 'PBSD', long: 'Paleto Bay Sheriff' },
-  sapr: { name: 'SAPR', long: 'San Andreas Park Rangers' },
-  sasp: { name: 'SASP', long: 'San Andreas State Police' }
+  sheriff: { name: 'SHERIFF', long: 'Sheriff Bundle' },
+  lspd: { name: 'LSPD', long: 'Los Santos Police' },
+  sasp: { name: 'SASP', long: 'San Andreas State Police' },
+  sapr: { name: 'SAPR', long: 'San Andreas Park Rangers' }
 };
+// departments inside a bundle, and old links (?pack=lssd) that now open the bundle on their department
+const DEPTS = { lscso: 'LSCSO', lssd: 'LSSD', pbsd: 'PBSD' };
+const ALIAS = { lscso: 'sheriff', lssd: 'sheriff', pbsd: 'sheriff' };
 const SLOTS = {
   jbib: 'Tops', lowr: 'Trousers', accs: 'Accessories', task: 'Armor & vests', berd: 'Gear',
-  decl: 'Decals', hand: 'Bags', feet: 'Shoes', uppr: 'Upper body', teef: 'Extras', p_head: 'Hats'
+  decl: 'Decals', hand: 'Bags', feet: 'Shoes', uppr: 'Upper body', teef: 'Extras', hair: 'Hair', p_head: 'Hats'
 };
-const SLOT_ORDER = ['jbib', 'lowr', 'accs', 'task', 'berd', 'decl', 'hand', 'feet', 'uppr', 'teef', 'p_head'];
+const SLOT_ORDER = ['jbib', 'lowr', 'accs', 'task', 'berd', 'decl', 'hand', 'feet', 'uppr', 'teef', 'hair', 'p_head'];
 
-let DATA = null, pack = 'sasp', slot = 'all', list = [], cur = 0, tex = 0, ai = 0, timer = null, interacted = false;
+let DATA = null, pack = 'sheriff', slot = 'all', dept = 'all', list = [], cur = 0, tex = 0, ai = 0, timer = null, interacted = false;
 const $ = (id) => document.getElementById(id);
 const pad = (n, l) => String(n).padStart(l, '0');
-const imgUrl = (it, t, a) => 'img/' + pack + '/' + it.slot + '_' + pad(it.idx, 3) + '_t' + t + '_a' + pad(a, 3) + '.webp';
-const itemName = (it) => SLOTS[it.slot] + ' ' + pad(it.idx + 1, 2);
+const imgUrl = (it, t, a) => 'img/' + pack + '/' + (it.dept ? it.dept + '_' : '') + it.slot + '_' + pad(it.idx, 3) + '_t' + t + '_a' + pad(a, 3) + '.webp';
+const itemName = (it) => (it.dept ? DEPTS[it.dept] + ' ' : '') + SLOTS[it.slot] + ' ' + pad(it.idx + 1, 2);
 
 /* ---- fit the fixed 1280x720 stage into whatever frame we are in ---- */
 let scale = 1;
@@ -195,7 +200,7 @@ window.addEventListener('resize', fit);
 
 function setPack(p, keepSlot) {
   pack = p;
-  if (!keepSlot) slot = 'all';
+  if (!keepSlot) { slot = 'all'; dept = 'all'; }
   document.title = PACKS[p].name + ' | Daddy Clothing Showroom';
   $('ghost').textContent = PACKS[p].name;
   const u = new URL(location.href); u.searchParams.set('pack', p);
@@ -215,28 +220,38 @@ function renderPacks() {
   });
 }
 
+const inDept = (it) => dept === 'all' || it.dept === dept;
 function renderRail() {
-  const d = DATA.packs[pack], counts = {};
-  d.items.forEach((it) => counts[it.slot] = (counts[it.slot] || 0) + 1);
-  const r = $('rail'); r.innerHTML = '<h4>Category</h4>';
-  const mk = (key, label, n) => {
+  const d = DATA.packs[pack], counts = {}, depts = {};
+  d.items.forEach((it) => { if (it.dept) depts[it.dept] = (depts[it.dept] || 0) + 1; });
+  d.items.filter(inDept).forEach((it) => counts[it.slot] = (counts[it.slot] || 0) + 1);
+  const r = $('rail'); r.innerHTML = '';
+  const mk = (on, label, n, click) => {
     const b = document.createElement('button');
-    b.className = 'sl' + (slot === key ? ' on' : '');
+    b.className = 'sl' + (on ? ' on' : '');
     b.innerHTML = '<span>' + label + '</span><em>' + n + '</em>';
-    b.onclick = () => { slot = key; renderRail(); renderPicker(0); };
+    b.onclick = click;
     r.appendChild(b);
   };
-  mk('all', 'All pieces', d.items.length);
-  SLOT_ORDER.filter((s) => counts[s]).forEach((s) => mk(s, SLOTS[s], counts[s]));
-  let t = '<b>' + PACKS[pack].long + '</b> · ' + d.items.length + ' pieces shown on the male model, ' + d.textures + ' variations. ';
+  const head = (t) => { const h = document.createElement('h4'); h.textContent = t; r.appendChild(h); };
+  if (Object.keys(depts).length) {
+    head('Department');
+    mk(dept === 'all', 'All departments', d.items.length, () => { dept = 'all'; slot = 'all'; renderRail(); renderPicker(0); });
+    Object.keys(DEPTS).filter((k) => depts[k]).forEach((k) => mk(dept === k, DEPTS[k], depts[k], () => { dept = k; slot = 'all'; renderRail(); renderPicker(0); }));
+  }
+  head('Category');
+  const shown = d.items.filter(inDept).length;
+  mk(slot === 'all', 'All pieces', shown, () => { slot = 'all'; renderRail(); renderPicker(0); });
+  SLOT_ORDER.filter((s) => counts[s]).forEach((s) => mk(slot === s, SLOTS[s], counts[s], () => { slot = s; renderRail(); renderPicker(0); }));
+  let t = '<b>' + PACKS[pack].long + '</b>' + (d.depts ? ' (' + d.depts.map((k) => DEPTS[k]).join(', ') + ')' : '') + ' · ' + d.items.length + ' male pieces, ' + d.textures + ' variations. ';
   t += d.female > 0 ? '<b>Female version included:</b> ' + d.female + ' pieces for female freemode peds.' : '<b>Male only</b> pack.';
   $('note').innerHTML = t;
 }
 
 function renderPicker(sel) {
   const d = DATA.packs[pack];
-  list = d.items.filter((it) => slot === 'all' || it.slot === slot)
-    .sort((a, b) => SLOT_ORDER.indexOf(a.slot) - SLOT_ORDER.indexOf(b.slot) || a.idx - b.idx);
+  list = d.items.filter((it) => inDept(it) && (slot === 'all' || it.slot === slot))
+    .sort((a, b) => SLOT_ORDER.indexOf(a.slot) - SLOT_ORDER.indexOf(b.slot) || (a.dept || '').localeCompare(b.dept || '') || a.idx - b.idx);
   $('pickTitle').textContent = slot === 'all' ? 'All pieces' : SLOTS[slot];
   $('pickCount').textContent = list.length;
   const g = $('grid'); g.innerHTML = '';
@@ -268,7 +283,7 @@ function select(i) {
   preload(it);
   [...$('grid').children].forEach((c, k) => c.classList.toggle('on', k === i));
   const on = $('grid').children[i]; if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest' });
-  $('kind').textContent = SLOTS[it.slot] + ' / ' + PACKS[pack].name;
+  $('kind').textContent = SLOTS[it.slot] + ' / ' + (it.dept ? DEPTS[it.dept] : PACKS[pack].name);
   $('name').textContent = itemName(it);
   $('sub').textContent = it.tex > 1 ? it.tex + ' variations' : 'Single variation';
   $('count').innerHTML = '<b>' + pad(i + 1, 2) + '</b> / ' + pad(list.length, 2);
@@ -323,8 +338,9 @@ fetch('manifest.json').then((r) => r.json()).then((j) => {
   });
   const q = new URL(location.href).searchParams;
   fit();
-  const p = q.get('pack');
-  setPack(p && DATA.packs[p] ? p : 'sasp');
+  const p = q.get('pack'), to = ALIAS[p] || p;
+  setPack(to && DATA.packs[to] ? to : 'sheriff');
+  if (ALIAS[p]) { dept = p; renderRail(); renderPicker(0); }
 });
 </script>
 </body>
