@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daddy Farm Almanac</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap&subset=cyrillic,latin-ext" rel="stylesheet">
+<style>
+  :root {
+    --paper: #ece3cf;
+    --paper-2: #e2d6ba;
+    --paper-3: #d8caa9;
+    --ink: #2a2118;
+    --ink-2: #66573f;
+    --ink-3: #9a8a6c;
+    --rule: rgba(42, 33, 24, .2);
+    --rule-2: rgba(42, 33, 24, .42);
+    --field: #3d6a28;
+    --card: #f6f1e4;
+    --tape: rgba(214, 199, 160, .78);
+    --shade: rgba(42, 33, 24, .25);
+    --hover: rgba(42, 33, 24, .035);
+    --veil: rgba(42, 33, 24, .86);
+    --on-ink: var(--paper);
+    --serif: 'Alegreya', Georgia, serif;
+    --sans: 'Alegreya Sans', 'Segoe UI', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .16 0 0 0 0 .13 0 0 0 0 .09 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --paper: #1d1913; --paper-2: #26211a; --paper-3: #342d23; --ink: #ece3cf; --ink-2: #b8a98d; --ink-3: #85775f;
+    --rule: rgba(236, 227, 207, .16); --rule-2: rgba(236, 227, 207, .34); --field: #8dbb5f; --card: #2c261e; --tape: rgba(120, 104, 74, .7);
+    --shade: rgba(0, 0, 0, .5); --hover: rgba(236, 227, 207, .05); --veil: rgba(10, 8, 6, .9); --on-ink: #1d1913;
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .93 0 0 0 0 .89 0 0 0 0 .81 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); } }
+  :root[data-theme="dark"] { --paper: #1d1913; --paper-2: #26211a; --paper-3: #342d23; --ink: #ece3cf; --ink-2: #b8a98d; --ink-3: #85775f;
+    --rule: rgba(236, 227, 207, .16); --rule-2: rgba(236, 227, 207, .34); --field: #8dbb5f; --card: #2c261e; --tape: rgba(120, 104, 74, .7);
+    --shade: rgba(0, 0, 0, .5); --hover: rgba(236, 227, 207, .05); --veil: rgba(10, 8, 6, .9); --on-ink: #1d1913;
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .93 0 0 0 0 .89 0 0 0 0 .81 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; color: var(--ink); background: var(--paper-2); font: 400 15px/1.4 var(--sans); overflow: hidden; -webkit-font-smoothing: antialiased; }
+  button, select { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  svg { display: block; }
+
+  #vp { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #app { position: relative; width: 1280px; height: 720px; flex: none; transform-origin: center; display: grid;
+    grid-template-columns: 300px 1fr 300px; grid-template-rows: 70px 46px 1fr 34px; background: var(--grain), var(--paper);
+    box-shadow: 0 0 0 1px var(--rule-2), 0 30px 80px var(--shade); }
+
+  /* masthead */
+  .mast { grid-column: 1 / 4; display: flex; align-items: center; gap: 26px; padding: 0 26px; border-bottom: 2px solid var(--ink); }
+  .brand small { display: block; font: 500 10px/1 var(--mono); letter-spacing: .22em; color: var(--ink-2); text-transform: uppercase; margin-bottom: 4px; }
+  .brand h1 { margin: 0; font: 800 30px/1 var(--serif); letter-spacing: .01em; }
+  .tally { margin-left: auto; display: flex; gap: 22px; font: 500 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+  .tally b { display: block; font: 700 22px/1 var(--serif); letter-spacing: 0; color: var(--ink); margin-bottom: 3px; }
+  .lang { position: relative; }
+  .lang button { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border: 1px solid var(--rule-2); font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+  .lang button:hover { background: var(--paper-2); }
+  .lang ul { position: absolute; right: 0; top: 40px; z-index: 9; margin: 0; padding: 6px 0; list-style: none; min-width: 170px; background: var(--grain), var(--paper); border: 1px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); display: none; }
+  .lang.on ul { display: block; }
+  .lang li button { width: 100%; border: 0; height: auto; padding: 8px 14px; justify-content: space-between; font: 500 15px/1 var(--sans); letter-spacing: 0; text-transform: none; }
+  .lang li button i { font: 500 10px/1 var(--mono); font-style: normal; letter-spacing: .14em; color: var(--ink-3); text-transform: uppercase; }
+  .lang li button.on { color: var(--field); }
+
+  /* theme drawers */
+  .drawers { grid-column: 1 / 4; display: flex; border-bottom: 1px solid var(--rule-2); overflow-x: auto; scrollbar-width: none; }
+  .drawers::-webkit-scrollbar { display: none; }
+  .dr { flex: 1 0 auto; display: flex; align-items: baseline; gap: 8px; padding: 14px 16px 0; border-right: 1px solid var(--rule); white-space: nowrap; font: 500 15px/1 var(--sans); color: var(--ink-2); position: relative; }
+  .dr i { font: 500 10px/1 var(--mono); font-style: normal; letter-spacing: .1em; color: var(--ink-3); }
+  .dr:hover { color: var(--ink); background: var(--hover); }
+  .dr.on { color: var(--ink); background: var(--paper-2); }
+  .dr.on::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--field); }
+
+  /* seed packets */
+  .packets { border-right: 1px solid var(--rule-2); padding: 16px 16px 16px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 10px; align-content: start; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--paper-3) transparent; }
+  .pk { position: relative; text-align: left; padding: 10px 8px 8px; background: var(--paper-2);
+    -webkit-mask: radial-gradient(4px at 6px 0, #0000 98%, #000) -6px 0 / 12px 100% repeat-x; mask: radial-gradient(4px at 6px 0, #0000 98%, #000) -6px 0 / 12px 100% repeat-x;
+    transition: background .15s; }
+  .pk img { width: 100%; aspect-ratio: 1; object-fit: contain; display: block; filter: saturate(.95); }
+  .theme { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--rule-2); }
+  .theme:hover { background: var(--paper-2); }
+  .theme .moon { display: none; }
+  :root[data-dark] .theme .sun { display: none; }
+  :root[data-dark] .theme .moon { display: block; }
+  .pk b { display: block; margin-top: 4px; font: 700 14px/1.15 var(--serif); }
+  .pk i { position: absolute; top: 9px; right: 8px; font: 500 9px/1 var(--mono); font-style: normal; letter-spacing: .1em; color: var(--ink-3); }
+  .pk:hover { background: var(--paper-3); }
+  .pk.on { background: var(--ink); color: var(--on-ink); }
+  .pk.on i { color: var(--paper-3); }
+
+  /* specimen plate */
+  .plate { position: relative; display: flex; flex-direction: column; align-items: center; padding: 14px 24px 10px; min-width: 0; }
+  .head { width: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--rule); padding-bottom: 8px; }
+  .head small { font: 500 10px/1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--field); }
+  .head h2 { margin: 2px 0 0; font: 800 36px/1 var(--serif); }
+  .head code { font: 400 12px/1 var(--mono); color: var(--ink-2); }
+  .frame { position: relative; flex: 1; width: 100%; min-height: 0; margin: 10px 0 6px; cursor: grab; user-select: none; -webkit-user-select: none; touch-action: pan-y; }
+  .frame.drag { cursor: grabbing; }
+  .frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+  .tick { position: absolute; width: 14px; height: 14px; border: 0 solid var(--ink-2); }
+  .tick.a { left: 0; top: 0; border-width: 1px 0 0 1px; } .tick.b { right: 0; top: 0; border-width: 1px 1px 0 0; }
+  .tick.c { left: 0; bottom: 0; border-width: 0 0 1px 1px; } .tick.d { right: 0; bottom: 0; border-width: 0 1px 1px 0; }
+  .hint { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; font: 500 10px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); transition: opacity .4s; pointer-events: none; }
+  .frame.used .hint { opacity: 0; }
+  .deg { position: absolute; right: 18px; top: 10px; font: 500 11px/1 var(--mono); color: var(--ink-3); }
+  .load { position: absolute; left: 14px; right: 14px; bottom: 0; height: 2px; background: var(--field); transform-origin: left; transform: scaleX(0); transition: transform .2s; }
+
+  /* growth line */
+  .growth { width: 100%; padding: 6px 0 2px; }
+  .growth h4 { margin: 0 0 6px; font: 500 10px/1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); }
+  .line { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); }
+  .line::before { content: ''; position: absolute; left: 12.5%; right: 12.5%; top: 21px; height: 1px; background: var(--rule-2); }
+  .line .fill { position: absolute; left: 12.5%; top: 20px; height: 3px; background: var(--field); transition: width .3s; }
+  .st { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding-bottom: 2px; color: var(--ink-2); }
+  .st .dot { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; background: var(--paper); border: 1px solid var(--rule-2); transition: background .2s, color .2s, border-color .2s; }
+  .st span { font: 700 14px/1 var(--serif); }
+  .st kbd { font: 500 9px/1 var(--mono); color: var(--ink-3); }
+  .st:hover .dot { border-color: var(--ink); color: var(--ink); }
+  .st.on { color: var(--ink); }
+  .st.on .dot { background: var(--field); border-color: var(--field); color: var(--on-ink); }
+
+  /* field notes */
+  .notes { border-left: 1px solid var(--rule-2); padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--paper-3) transparent; }
+  .notes h3 { margin: 0; font: 700 20px/1 var(--serif); border-bottom: 2px solid var(--ink); padding-bottom: 6px; }
+  .pin { position: relative; padding: 8px 8px 7px; background: var(--card); box-shadow: 0 1px 0 var(--rule-2), 2px 3px 0 var(--shade); transform: rotate(-1.2deg); cursor: zoom-in; }
+  .pin::before { content: ''; position: absolute; left: 50%; top: -9px; width: 78px; height: 20px; transform: translateX(-50%) rotate(2deg); background: var(--tape); box-shadow: inset 0 0 0 1px rgba(42, 33, 24, .06); }
+  .pin img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+  .pin span { display: block; margin-top: 6px; font: 500 9.5px/1.3 var(--mono); letter-spacing: .08em; color: var(--ink-2); text-transform: uppercase; }
+  .strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 6px; background: var(--card); box-shadow: 0 1px 0 var(--rule-2); }
+  .strip img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+  .ledger { margin: 0; display: grid; gap: 9px; }
+  .ledger div { display: flex; align-items: baseline; gap: 6px; }
+  .ledger dt { font: 500 10px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
+  .ledger div::after { content: none; }
+  .ledger .dots { flex: 1; border-bottom: 1px dotted var(--rule-2); transform: translateY(-3px); }
+  .ledger dd { margin: 0; font: 500 15px/1.2 var(--sans); text-align: right; }
+  .ledger dd small { display: block; font: 400 10px/1.4 var(--mono); color: var(--ink-3); }
+  .stamp { align-self: flex-start; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1.5px solid var(--ink); font: 500 12px/1 var(--mono); transition: background .15s, color .15s; max-width: 100%; }
+  .stamp em { font-style: normal; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--field); }
+  .stamp:hover { background: var(--ink); color: var(--on-ink); }
+  .stamp:hover em { color: var(--paper-3); }
+  .stamp span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fine { margin: 0; font-size: 13px; color: var(--ink-2); }
+
+  footer { grid-column: 1 / 4; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; border-top: 2px solid var(--ink); font: 500 10px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+
+  .lb { position: absolute; inset: 0; z-index: 8; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 10px; padding: 30px; background: var(--veil); cursor: zoom-out; }
+  .lb.on { display: flex; }
+  .lb img { max-width: 100%; max-height: calc(100% - 30px); background: var(--card); padding: 8px; }
+  .lb span { font: 500 10px/1 var(--mono); letter-spacing: .18em; color: var(--paper-3); text-transform: uppercase; }
+
+  /* phones and narrow windows: one column, page scrolls */
+  body.m { overflow: auto; background: var(--paper); }
+  body.m #vp { position: static; display: block; }
+  body.m #app { width: 100%; height: auto; transform: none !important; display: flex; flex-direction: column; box-shadow: none; overflow-x: hidden; }
+  body.m #app > * { min-width: 0; max-width: 100%; }
+  body.m .mast { flex-wrap: wrap; gap: 10px 16px; padding: 14px 16px; }
+  body.m .brand h1 { font-size: 26px; }
+  body.m .tally { margin-left: 0; order: 3; width: 100%; }
+  body.m .lang { margin-left: auto; }
+  body.m .dr { padding: 12px 14px 10px; flex: none; }
+  body.m .packets { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 112px; border-right: 0; border-bottom: 1px solid var(--rule-2); padding: 14px 16px; overflow-x: auto; }
+  body.m .plate { padding: 14px 16px; }
+  body.m .head { flex-direction: column; align-items: flex-start; gap: 6px; }
+  body.m .head h2 { font-size: 30px; }
+  body.m .frame { flex: none; aspect-ratio: 1; }
+  body.m .st .dot { width: 38px; height: 38px; }
+  body.m .notes { border-left: 0; border-top: 1px solid var(--rule-2); padding: 18px 16px; }
+  body.m footer { flex-wrap: wrap; gap: 8px; padding: 12px 16px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <!-- growth stage glyphs, drawn for this page -->
+  <symbol id="g-sprout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M12 20v-7"/><path d="M12 13c0-3-2.4-5-5.5-5 0 3 2.4 5 5.5 5Z"/><path d="M12 15c0-2.6 2-4.4 4.8-4.4 0 2.6-2 4.4-4.8 4.4Z"/></symbol>
+  <symbol id="g-growing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16"/><path d="M12 21V6"/><path d="M12 10c-1.5-2.8-4.4-3.7-6.6-3 .3 2.6 3.1 4.4 6.6 3Z"/><path d="M12 14c1.6-2.9 4.6-3.7 6.8-2.9-.4 2.6-3.3 4.3-6.8 2.9Z"/><path d="M12 18c-1.3-2-3.5-2.6-5.2-2 .3 1.9 2.6 3.1 5.2 2Z"/><path d="M12 6c-.4-1.4.2-2.6 1.3-3.2.5 1.3-.1 2.6-1.3 3.2Z"/></symbol>
+  <symbol id="g-mature" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16"/><path d="M12 21v-9"/><path d="M12 12c-4.8 0-7-2.8-7-5.6C5 4 7.7 2.5 12 2.5S19 4 19 6.4C19 9.2 16.8 12 12 12Z"/><circle cx="9" cy="7" r="1.2"/><circle cx="14.8" cy="8.2" r="1.2"/><circle cx="12.6" cy="5" r="1.2"/><path d="M12 16l-3-2.2M12 15l3-2"/></symbol>
+  <symbol id="g-rotten" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16"/><path d="M12 21c0-4 .3-7 2.2-9.5 1.4-1.8 1.6-3.6.6-5.3"/><path d="M14.2 11.5c2.6.4 4 2 4.2 4.6-2.5-.1-4-1.6-4.2-4.6Z"/><path d="M13.2 8.4c-2.4 1-4.4.5-5.6-1.5 2.2-1.1 4.3-.6 5.6 1.5Z"/><path d="M8 19.5l1.2-.8M16.5 19.6l-1.3-.6"/></symbol>
+  <symbol id="g-turn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c0 2.2 4 4 9 4s9-1.8 9-4-4-4-9-4"/><path d="M8.5 5.5 12 8l-3.5 2.5"/></symbol>
+  <symbol id="g-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></symbol>
+  <symbol id="g-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1Z"/><path d="M16 4.5l.5 1.4 1.4.5-1.4.5-.5 1.4-.5-1.4-1.4-.5 1.4-.5Z"/></symbol>
+  <symbol id="g-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m7 10 5 5 5-5"/></symbol>
+</svg>
+<div id="vp">
+  <div id="app">
+    <header class="mast">
+      <div class="brand"><small lang="en">Daddy Studio · FiveM</small><h1 id="title">Farm Almanac</h1></div>
+      <div class="tally" id="tally"></div>
+      <button class="theme" id="themeBtn" aria-label="Light / dark"><svg class="sun" width="18" height="18"><use href="#g-sun"/></svg><svg class="moon" width="18" height="18"><use href="#g-moon"/></svg></button>
+      <div class="lang" id="lang"><button id="langBtn"><span id="langCode">EN</span><svg width="14" height="14"><use href="#g-down"/></svg></button><ul id="langList"></ul></div>
+    </header>
+    <nav class="drawers" id="drawers"></nav>
+    <aside class="packets" id="packets"></aside>
+    <main class="plate">
+      <div class="head"><div><small id="kicker"></small><h2 id="name"></h2></div><code id="code"></code></div>
+      <div class="frame" id="frame">
+        <i class="tick a"></i><i class="tick b"></i><i class="tick c"></i><i class="tick d"></i>
+        <img id="big" alt="">
+        <span class="deg" id="deg">0°</span>
+        <div class="hint"><svg width="18" height="18"><use href="#g-turn"/></svg><span id="dragHint"></span></div>
+        <div class="load" id="load"></div>
+      </div>
+      <div class="growth"><h4 id="growthTitle"></h4><div class="line" id="line"><div class="fill" id="fill"></div></div></div>
+    </main>
+    <aside class="notes">
+      <h3 id="notesTitle"></h3>
+      <div id="rowBox"></div>
+      <dl class="ledger" id="ledger"></dl>
+      <div><dt class="ledger" style="font:500 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-bottom:8px" id="modelTitle"></dt><button class="stamp" id="stamp"><span></span><em></em></button></div>
+      <p class="fine" id="fine"></p>
+    </aside>
+    <footer><span id="foot" lang="en"></span><span id="keys"></span></footer>
+    <div class="lb" id="lb"><img id="lbimg" alt=""><span id="lbtext"></span></div>
+  </div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const STAGES = ['sprout', 'growing', 'mature', 'rotten'];
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+let data, lang = 'en', theme, crop, stage, frame = 0, frames = [];
+
+const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+const t = (key) => (data.ui[lang] && data.ui[lang][key]) ?? data.ui.en[key];
+const nm = (names) => names[lang] ?? names.en;
+// light or dark: the visitor's choice (kept), else the system's
+function applyTheme() {
+  const chosen = store.get('almanac-theme');
+  if (chosen) document.documentElement.dataset.theme = chosen; else delete document.documentElement.dataset.theme;
+  const dark = chosen ? chosen === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.toggleAttribute('data-dark', dark);
+}
+const pic = (s, a) => `img/${s.model}/a${String(a).padStart(3, '0')}.webp`;
+const number = (c) => String(data.crops.indexOf(c) + 1).padStart(3, '0');
+
+function fit() {
+  const mobile = innerWidth < 860 || innerHeight < 520;
+  document.body.classList.toggle('m', mobile);
+  $('app').style.transform = mobile ? '' : `scale(${Math.min((innerWidth - 24) / 1280, (innerHeight - 24) / 720, 1.4)})`;
+}
+
+function show(i) {
+  frame = (i + frames.length) % frames.length;
+  $('big').src = frames[frame].src;
+  $('deg').textContent = `${data.angles[frame]}°`;
+}
+
+function texts() {
+  document.documentElement.lang = lang;
+  $('title').textContent = t('title');
+  document.title = `Daddy ${t('title')}`;
+  const props = data.crops.reduce((n, c) => n + c.stages.length, 0);
+  $('tally').innerHTML = `<span><b>${props}</b>${t('props')}</span><span><b>${data.crops.length}</b>${t('crops')}</span><span><b>${data.themes.length}</b>${t('packs')}</span>`;
+  $('langCode').textContent = lang;
+  $('langList').innerHTML = '';
+  for (const [code, label] of Object.entries(data.languages)) {
+    const b = el('button', code === lang ? 'on' : '', `<span>${label}</span><i>${code}</i>`);
+    b.onclick = () => { lang = code; store.set('almanac-lang', code); $('lang').classList.remove('on'); render(); };
+    const li = el('li'); li.append(b); $('langList').append(li);
+  }
+  $('dragHint').textContent = t('drag');
+  $('growthTitle').textContent = t('growth');
+  $('notesTitle').textContent = t('notes');
+  $('modelTitle').textContent = t('model');
+  $('fine').textContent = t('note');
+  $('foot').textContent = `Daddy Studio · ${t('title')}`;
+  $('keys').textContent = t('keys');
+  $('lbtext').textContent = t('close');
+}
+
+function drawers() {
+  const box = $('drawers'); box.innerHTML = '';
+  data.themes.forEach((th, k) => {
+    const b = el('button', 'dr' + (th.id === theme ? ' on' : ''), `<i>${ROMAN[k]}</i>${nm(th.name)}`);
+    b.onclick = () => pickTheme(th.id);
+    box.append(b);
+  });
+  // the open drawer and packet stay in view on narrow screens and in long languages
+  box.querySelector('.on')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}
+
+function packets() {
+  const box = $('packets'); box.innerHTML = '';
+  for (const c of data.crops.filter((c) => c.theme === theme)) {
+    const icon = c.stages[Math.min(2, c.stages.length - 1)];
+    const b = el('button', 'pk' + (c === crop ? ' on' : ''), `<i>No. ${number(c)}</i><img src="${pic(icon, 0)}" alt="" loading="lazy"><b>${nm(c.name)}</b>`);
+    b.onclick = () => pickCrop(c);
+    box.append(b);
+  }
+  box.querySelector('.on')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}
+
+function growth() {
+  const line = $('line');
+  line.querySelectorAll('.st').forEach((n) => n.remove());
+  crop.stages.forEach((s, k) => {
+    const b = el('button', 'st' + (s === stage ? ' on' : ''), `<span class="dot"><svg width="24" height="24"><use href="#g-${s.stage}"/></svg></span><span>${t('stages')[s.stage]}</span><kbd>${k + 1}</kbd>`);
+    b.onclick = () => pickStage(s);
+    line.append(b);
+  });
+  const k = crop.stages.indexOf(stage);
+  $('fill').style.width = `${(k / (crop.stages.length - 1)) * 75}%`;
+}
+
+function notes() {
+  const box = $('rowBox');
+  if (crop.shot) {
+    box.innerHTML = `<div class="pin" id="pin"><img src="${crop.row}" alt=""><span>${t('row')}</span></div>`;
+    $('pin').onclick = () => { $('lbimg').src = crop.row; $('lb').classList.add('on'); };
+  } else {
+    box.innerHTML = `<div class="strip">${crop.stages.map((s) => `<img src="${pic(s, 0)}" alt="">`).join('')}</div>`;
+  }
+  const n = (x) => x.toLocaleString(lang);
+  const s = stage;
+  $('ledger').innerHTML = `<div><dt>${t('size')}</dt><span class="dots"></span><dd>${s.size.map((v) => v.toFixed(2)).join(' × ')} m</dd></div>`
+    + `<div><dt>${t('detail')}</dt><span class="dots"></span><dd>${n(s.tris.high)} / ${n(s.tris.medium)} / ${n(s.tris.low)}<small>${t('lods')}</small></dd></div>`;
+  $('stamp').querySelector('span').textContent = s.model;
+  $('stamp').querySelector('em').textContent = t('copy');
+}
+
+function render() {
+  texts(); drawers(); packets();
+  $('kicker').textContent = `No. ${number(crop)} · ${nm(data.themes.find((th) => th.id === crop.theme).name)}`;
+  $('name').textContent = nm(crop.name);
+  $('code').textContent = crop.group;
+  growth(); notes();
+  history.replaceState(null, '', `?crop=${crop.group}&stage=${stage.stage}&lang=${lang}`);
+}
+
+// a stage's turn: the first frame at once, the rest fill the bar under the plate
+function pickStage(s) {
+  stage = s;
+  let done = 0;
+  const at = frame;
+  frames = data.angles.map((a) => { const im = new Image(); im.onload = () => { done++; $('load').style.transform = `scaleX(${done < frames.length ? done / frames.length : 0})`; }; im.src = pic(s, a); return im; });
+  show(at);
+  render();
+}
+
+function pickCrop(c, stageName) {
+  crop = c; theme = c.theme;
+  pickStage(c.stages.find((s) => s.stage === stageName) || c.stages.find((s) => s.stage === 'mature') || c.stages[0]);
+}
+
+function pickTheme(id) { pickCrop(data.crops.find((c) => c.theme === id)); }
+
+// drag or swipe turns the prop, arrows too; 1-4 pick a stage
+function controls() {
+  const f = $('frame');
+  let x0 = null, f0 = 0;
+  f.addEventListener('pointerdown', (e) => { x0 = e.clientX; f0 = frame; f.classList.add('drag', 'used'); f.setPointerCapture(e.pointerId); });
+  f.addEventListener('pointermove', (e) => { if (x0 !== null) show(f0 - Math.round((e.clientX - x0) / Math.max(18, f.clientWidth / 2 / frames.length))); });
+  const up = () => { x0 = null; f.classList.remove('drag'); };
+  f.addEventListener('pointerup', up); f.addEventListener('pointercancel', up);
+  addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { $('lb').classList.remove('on'); $('lang').classList.remove('on'); }
+    if (e.key === 'ArrowLeft') { show(frame + 1); f.classList.add('used'); }
+    if (e.key === 'ArrowRight') { show(frame - 1); f.classList.add('used'); }
+    const k = Number(e.key) - 1;
+    if (k >= 0 && k < crop.stages.length) pickStage(crop.stages[k]);
+  });
+  $('themeBtn').onclick = () => { store.set('almanac-theme', document.documentElement.hasAttribute('data-dark') ? 'light' : 'dark'); applyTheme(); };
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+  $('langBtn').onclick = (e) => { e.stopPropagation(); $('lang').classList.toggle('on'); };
+  addEventListener('click', (e) => { if (!$('lang').contains(e.target)) $('lang').classList.remove('on'); });
+  $('lb').onclick = () => $('lb').classList.remove('on');
+  $('stamp').onclick = async () => { try { await navigator.clipboard.writeText(stage.model); $('stamp').querySelector('em').textContent = t('copied'); } catch {} };
+}
+
+async function start() {
+  data = await (await fetch('manifest.json')).json();
+  const q = new URLSearchParams(location.search);
+  const wanted = q.get('lang') || store.get('almanac-lang') || (navigator.language || 'en').slice(0, 2);
+  lang = data.languages[wanted] ? wanted : 'en';
+  controls();
+  pickCrop(data.crops.find((c) => c.group === q.get('crop')) || data.crops[0], q.get('stage'));
+}
+
+applyTheme();
+addEventListener('resize', fit);
+fit();
+start().then(fit);
+</script>
+</body>
+</html>
