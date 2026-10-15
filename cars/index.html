@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daddy Garage</title>
+<meta name="description" content="Every car of the Daddy vehicle packs: 360° turns, in-game shots, polygon and texture budgets.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --asphalt: #121315; --tarmac: #1a1c1f; --kerb: #23262a; --line: rgba(255, 255, 255, .08); --line-2: rgba(255, 255, 255, .16);
+    --chalk: #eceae4; --dust: #9a9890; --pit: #f2c230; --pit-ink: #1b1607; --red: #e2483d;
+    --display: 'Barlow Condensed', 'Arial Narrow', sans-serif; --body: 'Barlow', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--asphalt); color: var(--chalk); font: 400 15px/1.5 var(--body); }
+  button, input, select { font: inherit; color: inherit; }
+  a { color: inherit; }
+
+  /* header: the pit wall */
+  header { border-bottom: 1px solid var(--line); background: var(--asphalt); position: sticky; top: 0; z-index: 5; }
+  .bar { max-width: 1320px; margin: 0 auto; padding: 18px 24px 14px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 28px; }
+  .brand { display: flex; align-items: baseline; gap: 12px; margin-right: auto; }
+  .brand h1 { margin: 0; font: 700 34px/1 var(--display); letter-spacing: .02em; text-transform: uppercase; }
+  .brand h1 b { color: var(--pit); font-weight: 700; }
+  .brand span { font: 400 12px/1 var(--mono); color: var(--dust); }
+  .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .search { width: 220px; height: 36px; padding: 0 12px; border-radius: 6px; border: 1px solid var(--line-2); background: var(--tarmac); outline: none; }
+  .search:focus { border-color: var(--pit); }
+  select { height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--line-2); background: var(--tarmac); }
+  .lang { height: 36px; padding: 0 12px; border-radius: 6px; border: 1px solid var(--line-2); background: none; cursor: pointer; font: 600 12px/1 var(--mono); }
+  .classes { max-width: 1320px; margin: 0 auto; padding: 0 24px 14px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+  .classes::-webkit-scrollbar { display: none; }
+  .chip { flex: none; height: 30px; padding: 0 12px; border-radius: 4px; border: 1px solid var(--line-2); background: none; cursor: pointer;
+    font: 600 14px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--dust); }
+  .chip em { font: 400 11px/1 var(--mono); font-style: normal; margin-left: 6px; opacity: .7; }
+  .chip[aria-pressed="true"] { background: var(--pit); border-color: var(--pit); color: var(--pit-ink); }
+
+  /* the grid: one bay per car */
+  main { max-width: 1320px; margin: 0 auto; padding: 22px 24px 64px; }
+  .count { font: 400 12px/1 var(--mono); color: var(--dust); margin: 0 0 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .bay { position: relative; display: block; text-align: left; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--tarmac); cursor: pointer; overflow: hidden; }
+  .bay:hover, .bay:focus-visible { border-color: var(--pit); outline: none; }
+  .bay .stage { position: relative; aspect-ratio: 16 / 10; background: radial-gradient(42% 7% at 50% calc(var(--floor, .8) * 100%), rgba(0, 0, 0, .7), transparent 70%), var(--kerb); }
+  .bay img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .bay .num { position: absolute; left: 10px; top: 10px; font: 600 11px/1 var(--mono); color: var(--dust); }
+  .bay .info { padding: 10px 12px 12px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: baseline; }
+  .bay h2 { margin: 0; font: 600 20px/1.15 var(--display); letter-spacing: .01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bay .tris { font: 600 13px/1 var(--mono); }
+  .bay .meta { font: 400 12px/1.3 var(--mono); color: var(--dust); text-transform: uppercase; }
+  .bay .budget { font: 400 11px/1 var(--mono); color: var(--dust); text-align: right; }
+  .heavy { color: var(--red); }
+  .empty { padding: 60px 0; color: var(--dust); text-align: center; }
+
+  /* detail: the car on the lift */
+  dialog { width: min(1180px, 100vw); max-width: 100vw; height: min(820px, 100dvh); max-height: 100dvh; margin: auto; padding: 0;
+    border: 1px solid var(--line-2); border-radius: 10px; background: var(--asphalt); color: var(--chalk); overflow: hidden; }
+  dialog::backdrop { background: rgba(6, 6, 7, .78); }
+  .lift { display: grid; grid-template-columns: 1fr 340px; height: 100%; }
+  .view { position: relative; display: flex; flex-direction: column; min-height: 0; background: var(--kerb); }
+  .box { background: radial-gradient(40% 6% at 50% calc(var(--floor, .8) * 100%), rgba(0, 0, 0, .7), transparent 70%); }
+  .spin { position: relative; flex: 1; min-height: 0; cursor: grab; touch-action: pan-y; user-select: none; container-type: size; display: grid; place-items: center; }
+  .box { position: relative; width: min(100cqw, 160cqh); aspect-ratio: 16 / 10; }
+  .spin.drag { cursor: grabbing; }
+  .box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+  .ticks { display: flex; gap: 3px; padding: 0 18px 10px; }
+  .ticks i { flex: 1; height: 3px; background: var(--line-2); border-radius: 2px; }
+  .ticks i.on { background: var(--pit); }
+  .controls { display: flex; align-items: center; gap: 8px; padding: 0 18px 16px; font: 400 12px/1 var(--mono); color: var(--dust); }
+  .controls button { height: 30px; padding: 0 12px; border-radius: 4px; border: 1px solid var(--line-2); background: none; cursor: pointer; font: 600 12px/1 var(--mono); }
+  .controls button[aria-pressed="true"] { border-color: var(--pit); color: var(--pit); }
+  .controls span { margin-left: auto; }
+  .shots { display: flex; gap: 8px; padding: 0 18px 16px; overflow-x: auto; }
+  .shots button { flex: none; width: 112px; aspect-ratio: 16 / 9; padding: 0; border: 1px solid var(--line-2); border-radius: 4px; overflow: hidden; background: var(--tarmac); cursor: pointer; }
+  .shots button[aria-pressed="true"] { border-color: var(--pit); }
+  .shots img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .shot-full { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+  .sheet { border-left: 1px solid var(--line); padding: 22px 22px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+  .sheet .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .sheet h2 { margin: 0; font: 700 32px/1.02 var(--display); text-transform: uppercase; }
+  .sheet .sub { margin-top: 6px; font: 400 12px/1.4 var(--mono); color: var(--dust); text-transform: uppercase; }
+  .close { flex: none; width: 34px; height: 34px; border-radius: 4px; border: 1px solid var(--line-2); background: none; cursor: pointer; font: 400 20px/1 var(--body); }
+  .stat { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; margin: 0; }
+  .stat dt { color: var(--dust); font-size: 13px; }
+  .stat dd { margin: 0; font: 600 13px/1.4 var(--mono); text-align: right; }
+  .sheet h3 { margin: 0 0 8px; font: 600 15px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--dust); }
+  .lods { display: grid; gap: 6px; }
+  .lod { display: grid; grid-template-columns: 54px 1fr 52px; gap: 8px; align-items: center; font: 400 11px/1 var(--mono); color: var(--dust); }
+  .lod .track { height: 8px; background: var(--kerb); border-radius: 2px; overflow: hidden; }
+  .lod .fill { height: 100%; background: var(--chalk); }
+  .lod .fill.was { background: var(--line-2); }
+  .lod b { color: var(--chalk); font-weight: 600; text-align: right; }
+  .note { font-size: 13px; color: var(--dust); }
+  .tag { display: inline-block; padding: 4px 8px; border-radius: 3px; background: var(--pit); color: var(--pit-ink); font: 600 12px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; }
+  .tag.off { background: none; color: var(--dust); border: 1px solid var(--line-2); }
+
+  footer { max-width: 1320px; margin: 0 auto; padding: 0 24px 40px; font: 400 12px/1.5 var(--mono); color: var(--dust); }
+
+  @media (max-width: 860px) {
+    .lift { grid-template-columns: 1fr; grid-template-rows: minmax(260px, 48dvh) 1fr; }
+    .sheet { border-left: 0; border-top: 1px solid var(--line); }
+    dialog { border-radius: 0; height: 100dvh; }
+  }
+  @media (max-width: 560px) {
+    .bar, .classes, main, footer { padding-left: 16px; padding-right: 16px; }
+    .brand h1 { font-size: 28px; }
+    .tools { width: 100%; }
+    .search { flex: 1; width: auto; min-width: 0; }
+    .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .bay h2 { font-size: 16px; }
+    .bay .budget { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand"><h1>Daddy <b>Garage</b></h1><span id="total"></span></div>
+    <div class="tools">
+      <input class="search" id="q" type="search" autocomplete="off">
+      <select id="sort"></select>
+      <button class="lang" id="lang" type="button"></button>
+    </div>
+  </div>
+  <nav class="classes" id="classes"></nav>
+</header>
+<main>
+  <p class="count" id="count"></p>
+  <div class="grid" id="grid"></div>
+</main>
+<footer id="foot"></footer>
+
+<dialog id="lift">
+  <div class="lift">
+    <div class="view">
+      <div class="spin" id="spin"><div class="box" id="box"><img id="frame" alt=""></div></div>
+      <div class="ticks" id="ticks"></div>
+      <div class="controls"><button id="auto" type="button"></button><span id="hint"></span></div>
+      <div class="shots" id="shots"></div>
+    </div>
+    <aside class="sheet" id="sheet"></aside>
+  </div>
+</dialog>
+
+<script>
+const T = {
+  en: { search: 'Search cars', all: 'All', sortName: 'Name', sortTris: 'Lightest first', sortHeavy: 'Heaviest first', sortClass: 'Class',
+    cars: (n) => `${n} cars`, shown: (n, t) => n === t ? `${t} cars` : `${n} of ${t} cars`, none: 'No car matches.', lang: 'TR',
+    drag: 'Drag to turn', spin: 'Auto spin', turn: '360°', make: 'Make', cls: 'Class', pack: 'Pack', near: 'Near model', parts: 'Tuning parts',
+    tex: 'Textures', size: 'Download', livery: 'Livery', yes: 'Template ready', no: 'Not supported', lods: 'Triangle budget',
+    was: 'Before optimizing', before: 'Before', status: { live: 'In the pack', candidate: 'Candidate', rejected: 'Rejected' },
+    lodNames: ['Near', 'High', 'Medium', 'Low', 'Far'], classes: {}, foot: 'Triangles counted on the near model the game draws up close. Before = the model as it came in.' },
+  tr: { search: 'Araç ara', all: 'Hepsi', sortName: 'İsim', sortTris: 'En hafif', sortHeavy: 'En ağır', sortClass: 'Sınıf',
+    cars: (n) => `${n} araç`, shown: (n, t) => n === t ? `${t} araç` : `${t} araçtan ${n}`, none: 'Eşleşen araç yok.', lang: 'EN',
+    drag: 'Çevirmek için sürükle', spin: 'Otomatik dön', turn: '360°', make: 'Marka', cls: 'Sınıf', pack: 'Paket', near: 'Yakın model', parts: 'Tuning parçası',
+    tex: 'Texture', size: 'İndirme', livery: 'Livery', yes: 'Şablon hazır', no: 'Desteklemiyor', lods: 'Üçgen bütçesi',
+    was: 'Optimizasyondan önce', before: 'Önce', status: { live: 'Pakette', candidate: 'Aday', rejected: 'Reddedildi' },
+    lodNames: ['Yakın', 'Yüksek', 'Orta', 'Düşük', 'Uzak'], classes: { super: 'Süper', sport: 'Spor', coupe: 'Coupe', sedan: 'Sedan', suv: 'SUV', muscle: 'Muscle', off_road: 'Arazi', van: 'Van' },
+    foot: 'Üçgenler oyunun yakında çizdiği modelden sayıldı. Önce = aracın geldiği hali.' },
+}
+const $ = (id) => document.getElementById(id)
+const k = (n) => n == null ? '–' : n >= 1000 ? `${Math.round(n / 1000)}k` : String(n)
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+let lang = 'en', cars = [], cls = 'all'
+try { lang = localStorage.getItem('garage-lang') || (navigator.language.startsWith('tr') ? 'tr' : 'en') } catch { }
+const t = () => T[lang]
+const clsName = (c) => t().classes[c] || c.replace('_', ' ')
+
+function header() {
+  document.documentElement.lang = lang
+  $('q').placeholder = t().search
+  $('lang').textContent = t().lang
+  $('sort').innerHTML = [['name', t().sortName], ['light', t().sortTris], ['heavy', t().sortHeavy], ['class', t().sortClass]]
+    .map(([v, l]) => `<option value="${v}">${l}</option>`).join('')
+  $('sort').value = new URLSearchParams(location.search).get('sort') || 'name'
+  $('total').textContent = t().cars(cars.length)
+  const counts = {}
+  for (const c of cars) counts[c.class] = (counts[c.class] || 0) + 1
+  $('classes').innerHTML = [['all', t().all, cars.length], ...Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([c, n]) => [c, clsName(c), n])]
+    .map(([c, l, n]) => `<button class="chip" type="button" data-c="${c}" aria-pressed="${c === cls}">${esc(l)}<em>${n}</em></button>`).join('')
+  $('foot').textContent = t().foot
+}
+
+function grid() {
+  const q = $('q').value.trim().toLowerCase(), sort = $('sort').value
+  let list = cars.filter((c) => (cls === 'all' || c.class === cls) && (!q || `${c.name} ${c.make} ${c.id}`.toLowerCase().includes(q)))
+  const by = { name: (a, b) => a.name.localeCompare(b.name), light: (a, b) => a.tris.hi - b.tris.hi, heavy: (a, b) => b.tris.hi - a.tris.hi,
+    class: (a, b) => a.class.localeCompare(b.class) || a.name.localeCompare(b.name) }
+  list.sort(by[sort] || by.name)
+  $('count').textContent = t().shown(list.length, cars.length)
+  $('grid').innerHTML = list.length ? list.map((c, i) => `
+    <button class="bay" type="button" data-id="${c.id}">
+      <div class="stage" style="--floor:${c.floor}"><img loading="lazy" src="img/${c.id}/a000.webp" alt="${esc(c.name)}"><span class="num">${String(i + 1).padStart(3, '0')}</span></div>
+      <div class="info"><h2>${esc(c.name)}</h2><span class="tris ${c.tris.hi > 200000 ? 'heavy' : ''}">${k(c.tris.hi)}</span>
+        <span class="meta">${esc(clsName(c.class))} · ${esc(c.make)}</span><span class="budget">${c.textureMB} MB</span></div>
+    </button>`).join('') : `<p class="empty">${t().none}</p>`
+}
+
+// ---- the lift: 360 viewer + spec sheet ------------------------------------------------------------------------------
+let cur = null, frames = [], idx = 0, auto = null, shot = -1
+function show(i) {
+  idx = (i + frames.length) % frames.length
+  $('frame').src = frames[idx].src
+  $('ticks').querySelectorAll('i').forEach((el, n) => el.classList.toggle('on', n === idx))
+}
+function spin(on) {
+  clearInterval(auto); auto = null
+  if (on) auto = setInterval(() => show(idx + 1), 90)
+  $('auto').setAttribute('aria-pressed', !!on)
+}
+function view(n) {
+  shot = n
+  $('box').querySelector('.shot-full')?.remove()
+  $('shots').querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-pressed', i === n))
+  if (n >= 0) { spin(false); $('box').insertAdjacentHTML('beforeend', `<img class="shot-full" src="shots/${cur.id}/${cur.shots[n]}" alt="">`) }
+}
+
+function open(id, push = true) {
+  cur = cars.find((c) => c.id === id)
+  if (!cur) return
+  frames = cur.angles.map((a) => { const im = new Image(); im.src = `img/${cur.id}/a${String(a).padStart(3, '0')}.webp`; return im })
+  $('box').style.setProperty('--floor', cur.floor)
+  $('ticks').innerHTML = cur.angles.map(() => '<i></i>').join('')
+  show(0)
+  $('auto').textContent = t().spin
+  $('hint').textContent = t().drag
+  $('shots').innerHTML = cur.shots.length ? [`<button type="button" aria-pressed="true"><img src="img/${cur.id}/a000.webp" alt="${t().turn}"></button>`,
+    ...cur.shots.map((s) => `<button type="button"><img loading="lazy" src="shots/${cur.id}/${s}" alt=""></button>`)].join('') : ''
+  $('shots').hidden = !cur.shots.length
+  const max = Math.max(cur.tris.original || 0, cur.tris.hi || 0, ...cur.tris.lods)
+  const bar = (label, n, was) => `<div class="lod"><span>${label}</span><div class="track"><div class="fill ${was ? 'was' : ''}" style="width:${Math.max(1, (n / max) * 100)}%"></div></div><b>${k(n)}</b></div>`
+  const L = t().lodNames
+  $('sheet').innerHTML = `
+    <div class="top"><div><h2>${esc(cur.name)}</h2><div class="sub">${esc(clsName(cur.class))} · ${esc(cur.make)} · ${esc(cur.id)}</div></div>
+      <button class="close" id="close" type="button" aria-label="Close">×</button></div>
+    <div><span class="tag ${cur.status === 'live' ? '' : 'off'}">${esc(t().status[cur.status] || cur.status)}</span></div>
+    <dl class="stat">
+      <dt>${t().near}</dt><dd class="${cur.tris.hi > 200000 ? 'heavy' : ''}">${(cur.tris.hi || 0).toLocaleString('en')}</dd>
+      <dt>${t().tex}</dt><dd>${cur.textureMB} MB</dd>
+      <dt>${t().size}</dt><dd>${cur.sizeMB} MB</dd>
+      <dt>${t().parts}</dt><dd>${cur.parts}</dd>
+      <dt>${t().livery}</dt><dd>${cur.livery ? t().yes : t().no}</dd>
+      <dt>${t().pack}</dt><dd>${esc(cur.pack)}</dd>
+    </dl>
+    <div><h3>${t().lods}</h3><div class="lods">
+      ${cur.tris.original ? bar(t().before, cur.tris.original, true) : ''}
+      ${bar(L[0], cur.tris.hi)}${cur.tris.lods.map((n, i) => bar(L[i + 1], n)).join('')}
+    </div>${cur.tris.original ? `<p class="note">${t().was}: ${k(cur.tris.original)} → ${k(cur.tris.hi)}</p>` : ''}</div>`
+  $('close').onclick = () => close()
+  view(-1)
+  if (!$('lift').open) $('lift').showModal()
+  spin(true)
+  if (push) history.pushState({ car: id }, '', `?car=${id}`)
+}
+function close(push = true) {
+  spin(false)
+  if ($('lift').open) $('lift').close()
+  cur = null
+  if (push) history.pushState({}, '', location.pathname)
+}
+
+// drag to turn: one frame per few pixels, the way a turntable feels
+let dragX = null, dragIdx = 0
+$('spin').addEventListener('pointerdown', (e) => { if (shot >= 0) view(-1); dragX = e.clientX; dragIdx = idx; spin(false); $('spin').classList.add('drag'); $('spin').setPointerCapture(e.pointerId) })
+$('spin').addEventListener('pointermove', (e) => { if (dragX !== null) show(dragIdx - Math.round((e.clientX - dragX) / 14)) })
+$('spin').addEventListener('pointerup', () => { dragX = null; $('spin').classList.remove('drag') })
+$('auto').onclick = () => { view(-1); spin(!auto) }
+$('shots').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) view([...$('shots').children].indexOf(b) - 1) })
+$('lift').addEventListener('cancel', (e) => { e.preventDefault(); close() })
+$('lift').addEventListener('click', (e) => { if (e.target === $('lift')) close() })
+document.addEventListener('keydown', (e) => { if (!cur) return; if (e.key === 'ArrowLeft') { spin(false); show(idx - 1) } if (e.key === 'ArrowRight') { spin(false); show(idx + 1) } })
+
+$('grid').addEventListener('click', (e) => { const b = e.target.closest('.bay'); if (b) open(b.dataset.id) })
+$('classes').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; cls = b.dataset.c; header(); grid() })
+$('q').addEventListener('input', grid)
+$('sort').addEventListener('change', grid)
+$('lang').onclick = () => { lang = lang === 'en' ? 'tr' : 'en'; try { localStorage.setItem('garage-lang', lang) } catch { }; const s = $('sort').value; header(); $('sort').value = s; grid(); if (cur) open(cur.id, false) }
+window.addEventListener('popstate', () => { const id = new URLSearchParams(location.search).get('car'); id ? open(id, false) : close(false) })
+
+fetch('manifest.json').then((r) => r.json()).then((m) => {
+  cars = m.cars
+  header(); grid()
+  const id = new URLSearchParams(location.search).get('car')
+  if (id) open(id, false)
+})
+</script>
+</body>
+</html>
